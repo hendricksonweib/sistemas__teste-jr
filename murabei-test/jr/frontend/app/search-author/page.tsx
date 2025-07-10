@@ -17,15 +17,22 @@ interface Author {
   biography: string
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 export default function AuthorsPage() {
   const [authors, setAuthors] = useState<Author[]>([])
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!API_URL) {
+      console.error("API URL não definida. Verifique seu .env.local")
+      return
+    }
+
     const fetchAuthors = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:5000/api/v1/authors")
+        const res = await fetch(`${API_URL}/api/v1/authors`)
         const data = await res.json()
         setAuthors(data)
       } catch (error) {
@@ -44,13 +51,15 @@ export default function AuthorsPage() {
 
   return (
     <section className="min-h-screen px-4 py-10">
-      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">
-        Todos os <span className="text-blue-600 dark:text-blue-400">Autores</span>
+      <h1 className="text-4xl font-extrabold text-center mb-8">
+        <span className="text-gray-900 dark:text-white">Todos os </span>
+        <span className="text-blue-600 dark:text-blue-400">Autores</span>
       </h1>
 
-      <div className="max-w-lg mx-auto mb-8">
+      <div className="max-w-lg mx-auto mb-10">
         <Input
-          placeholder="Buscar autor por nome..."
+          placeholder="Digite o nome do autor..."
+          aria-label="Buscar autor"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
