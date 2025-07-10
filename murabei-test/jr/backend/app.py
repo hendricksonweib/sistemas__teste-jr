@@ -261,3 +261,5 @@ def create_new_book(book_data):
 #     return jsonify(book_list)
 
 # # GET /api/v1/authors
+if __name__ == "__main__":
+    app.run(debug=True)
