@@ -1,6 +1,6 @@
 import "./globals.css";
 import { ThemeProvider } from "../components/theme-provider";
-
+import Header from "@/components/Header";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -15,6 +15,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Header/>
           {children}
         </ThemeProvider>
       </body>
