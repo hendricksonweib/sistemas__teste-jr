@@ -71,8 +71,6 @@ export default function Home() {
             key={index}
             {...livro}
             onView={() => console.log("Ver", livro.title)}
-            onEdit={() => console.log("Editar", livro.title)}
-            onDelete={() => console.log("Excluir", livro.title)}
           />
         ))}
       </div>
