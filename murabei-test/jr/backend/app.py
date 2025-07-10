@@ -28,6 +28,34 @@ def get_books():
         books = [book for book in books if title_query.lower() in book['title'].lower()]
 
     return jsonify(books)
+
+# GET /api/v1/books/<id> - returns a book by its ID
+@app.route('/api/v1/books/<int:book_id>', methods=['GET'])
+def get_book_by_id(book_id):
+    conn = sqlite3.connect('db.sqlite')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM book WHERE id = ?;', (book_id,))
+    book = cursor.fetchone()
+
+    conn.close()
+
+    if book is None:
+        return jsonify({'error': 'Book not found'}), 404
+
+    book_dict = {
+        'id': book[0],
+        'title': book[1],
+        'author': book[2],
+        'author_slug': book[3],
+        'biography': book[4],
+        'authors': book[5],
+        'publisher': book[12],
+        'synopsis': book[21],
+    }
+
+    return jsonify(book_dict)
+
     
 # GET /api/v1/books/author/<author> - returns a list of all books by the given author
 
