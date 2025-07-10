@@ -1,5 +1,5 @@
-"use client"
-import BookCard from "@/components/BookCard";
+"use client";
+import BookCarousel from "@/components/BookCarousel";
 
 export default function Home() {
   const livros = [
@@ -65,15 +65,12 @@ export default function Home() {
           acessível e dinâmico.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-        {livros.map((livro, index) => (
-          <BookCard
-            key={index}
-            {...livro}
-            onView={() => console.log("Ver", livro.title)}
-          />
-        ))}
-      </div>
+      <section className="py-10">
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-white">
+          Livros em destaque
+        </h2>
+        <BookCarousel />
+      </section>
     </section>
   );
 }
