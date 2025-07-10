@@ -2,28 +2,39 @@
 
 import React, { useEffect, useState } from "react"
 import BookCard from "@/components/BookCard"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
+const PAGE_SIZE = 8
 
 export default function Page() {
   const [livros, setLivros] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [hasNextPage, setHasNextPage] = useState(false)
+
+  const fetchBooks = async (page: number) => {
+    setLoading(true)
+
+    try {
+      const res = await fetch(`${API_URL}/api/v1/books?page=${page}&page_size=${PAGE_SIZE}`)
+      const data = await res.json()
+      setLivros(data)
+      setHasNextPage(data.length === PAGE_SIZE) // se tiver menos que o PAGE_SIZE, não há próxima
+    } catch (err) {
+      console.error("Erro ao buscar livros:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/v1/books`)
-        const data = await res.json()
-        setLivros(data)
-      } catch (err) {
-        console.error("Erro ao buscar livros:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
+    fetchBooks(page)
+  }, [page])
 
-    fetchBooks()
-  }, [])
+  const handleNext = () => setPage((prev) => prev + 1)
+  const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1))
 
   return (
     <section className="w-full min-h-screen px-4 py-10 flex flex-col">
@@ -34,18 +45,33 @@ export default function Page() {
       {loading ? (
         <p className="text-center text-gray-500 dark:text-gray-400">Carregando livros...</p>
       ) : livros.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 justify-center flex-1">
-          {livros.map((livro, index) => (
-            <BookCard
-              key={index}
-              title={livro.title}
-              author={livro.author}
-              description={livro.synopsis || livro.biography || "Sem descrição"}
-              rating={5} // você pode ajustar se tiver rating real
-              onView={() => {}}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 justify-center flex-1">
+            {livros.map((livro, index) => (
+              <BookCard
+                key={index}
+                title={livro.title}
+                author={livro.author}
+                description={livro.synopsis || livro.biography || "Sem descrição"}
+                rating={5}
+                onView={() => {}}
+              />
+            ))}
+          </div>
+
+          {/* Paginação */}
+          <div className="flex items-center justify-center mt-8 gap-4">
+            <Button onClick={handlePrev} disabled={page === 1} variant="outline">
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Anterior
+            </Button>
+            <span className="text-gray-700 dark:text-gray-300 font-medium">Página {page}</span>
+            <Button onClick={handleNext} disabled={!hasNextPage} variant="outline">
+              Próxima
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        </>
       ) : (
         <p className="text-center text-gray-400">Nenhum livro encontrado.</p>
       )}
