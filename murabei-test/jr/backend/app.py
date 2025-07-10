@@ -17,17 +17,18 @@ def hello_world():
 
 @app.route('/api/v1/books', methods=['GET'])
 def get_books():
-    # Get the page and page_size parameters from the request arguments
+    # Parâmetros de paginação
     page = request.args.get('page', default=1, type=int)
     page_size = request.args.get('page_size', default=10, type=int)
+    title_query = request.args.get('title', default=None, type=str)
 
-    # Call the get_all_books function with the page and page_size parameters
     books = get_all_books(page=page, page_size=page_size)
 
-    # Return the books as a JSON response
+    if title_query:
+        books = [book for book in books if title_query.lower() in book['title'].lower()]
+
     return jsonify(books)
-
-
+    
 # GET /api/v1/books/author/<author> - returns a list of all books by the given author
 
 
@@ -95,6 +96,7 @@ def get_all_books(page=1, page_size=10):
 
     # Return the books as a JSON response
     return book_list
+
 
 
 def get_authors():
