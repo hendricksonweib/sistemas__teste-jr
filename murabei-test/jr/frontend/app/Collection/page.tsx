@@ -21,7 +21,7 @@ export default function Page() {
       const res = await fetch(`${API_URL}/api/v1/books?page=${page}&page_size=${PAGE_SIZE}`)
       const data = await res.json()
       setLivros(data)
-      setHasNextPage(data.length === PAGE_SIZE) // se tiver menos que o PAGE_SIZE, não há próxima
+      setHasNextPage(data.length === PAGE_SIZE)
     } catch (err) {
       console.error("Erro ao buscar livros:", err)
     } finally {
@@ -50,16 +50,14 @@ export default function Page() {
             {livros.map((livro, index) => (
               <BookCard
                 key={index}
+                id={livro.id} // 👈 agora está sendo passado corretamente!
                 title={livro.title}
                 author={livro.author}
                 description={livro.synopsis || livro.biography || "Sem descrição"}
                 rating={5}
-                onView={() => {}}
               />
             ))}
           </div>
-
-          {/* Paginação */}
           <div className="flex items-center justify-center mt-8 gap-4">
             <Button onClick={handlePrev} disabled={page === 1} variant="outline">
               <ChevronLeft className="w-4 h-4 mr-1" />
