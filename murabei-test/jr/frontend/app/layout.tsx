@@ -1,6 +1,6 @@
 import "./globals.css";
-import { ThemeProvider } from "../components/theme-provider";
 import Header from "@/components/Header";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -8,16 +8,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`$antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body className={`$antialiased`}>      
           <Header/>
           {children}
-        </ThemeProvider>
       </body>
     </html>
   );
