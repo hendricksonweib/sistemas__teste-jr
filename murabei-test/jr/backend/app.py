@@ -2,11 +2,17 @@ import json
 import sqlite3
 
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS  
 
 app = Flask(__name__)
-CORS(app)
 
+CORS(
+    app,
+    resources={r"/api/*": {"origins": "*"}},
+    supports_credentials=True,
+    allow_headers="*",
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
 @app.route("/", methods=["GET"])
 def hello_world():
@@ -56,7 +62,38 @@ def get_book_by_id(book_id):
 
     return jsonify(book_dict)
 
-    
+# PUT /api/v1/books/<id> - edit a book by its ID
+@app.route('/api/v1/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id):
+    data = request.get_json()
+
+    conn = sqlite3.connect('db.sqlite')
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        UPDATE book SET 
+            title = ?, 
+            author = ?, 
+            authors = ?, 
+            publisher = ?, 
+            author_bio = ?, -- aqui
+            synopsis = ?
+        WHERE id = ?
+    ''', (
+        data.get('title'),
+        data.get('author'),
+        data.get('authors'),
+        data.get('publisher'),
+        data.get('biography'),  # frontend ainda envia como 'biography'
+        data.get('synopsis'),
+        book_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({'message': 'Book updated successfully.'}), 200
+
 # GET /api/v1/books/author/<author> - returns a list of all books by the given author
 
 
