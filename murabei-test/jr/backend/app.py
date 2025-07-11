@@ -84,7 +84,7 @@ def update_book(book_id):
         data.get('author'),
         data.get('authors'),
         data.get('publisher'),
-        data.get('biography'),  # frontend ainda envia como 'biography'
+        data.get('biography'),  
         data.get('synopsis'),
         book_id
     ))
@@ -93,6 +93,23 @@ def update_book(book_id):
     conn.close()
 
     return jsonify({'message': 'Book updated successfully.'}), 200
+
+# DELETE /api/v1/books/<id> - deleta um livro pelo ID
+@app.route('/api/v1/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    try:
+        conn = sqlite3.connect('db.sqlite')
+        cursor = conn.cursor()
+
+        cursor.execute('DELETE FROM book WHERE id = ?', (book_id,))
+        conn.commit()
+        conn.close()
+
+        return jsonify({'message': 'Livro deletado com sucesso.'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 # GET /api/v1/books/author/<author> - returns a list of all books by the given author
 

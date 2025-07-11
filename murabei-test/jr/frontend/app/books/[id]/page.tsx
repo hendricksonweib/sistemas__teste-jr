@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EditBookModal } from "@/components/EditBookModal";
+import { toast } from "sonner";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -16,7 +17,6 @@ export default function BookDetailPage() {
   const [book, setBook] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch book data
   useEffect(() => {
     const fetchBook = async () => {
       try {
@@ -26,6 +26,7 @@ export default function BookDetailPage() {
         setBook(data);
       } catch (err) {
         console.error("Erro ao buscar livro:", err);
+        toast.error("Erro ao buscar o livro.");
       } finally {
         setLoading(false);
       }
@@ -34,9 +35,8 @@ export default function BookDetailPage() {
     if (id) fetchBook();
   }, [id]);
 
-  // Delete book
   const handleDelete = async () => {
-    const confirmDelete = confirm("Tem certeza que deseja excluir este livro?");
+    const confirmDelete = confirm(`Tem certeza que deseja excluir "${book.title}"?`);
     if (!confirmDelete) return;
 
     try {
@@ -46,10 +46,11 @@ export default function BookDetailPage() {
 
       if (!res.ok) throw new Error("Erro ao excluir livro");
 
+      toast.success(`"${book.title}" foi excluído com sucesso.`);
       router.push("/books");
     } catch (error) {
       console.error("Erro ao excluir:", error);
-      alert("Falha ao excluir o livro.");
+      toast.error("Falha ao excluir o livro. Tente novamente.");
     }
   };
 
