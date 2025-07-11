@@ -36,23 +36,23 @@ export default function BookDetailPage() {
   }, [id]);
 
   const handleDelete = async () => {
-    const confirmDelete = confirm(`Tem certeza que deseja excluir "${book.title}"?`);
-    if (!confirmDelete) return;
+  const confirmDelete = confirm(`Tem certeza que deseja excluir "${book.title}"?`);
+  if (!confirmDelete) return;
 
-    try {
-      const res = await fetch(`${API_URL}/api/v1/books/${id}`, {
-        method: "DELETE",
-      });
+  try {
+    const res = await fetch(`${API_URL}/api/v1/books/${id}`, {
+      method: "DELETE",
+    });
 
-      if (!res.ok) throw new Error("Erro ao excluir livro");
+    if (!res.ok) throw new Error("Erro ao excluir livro");
 
-      toast.success(`"${book.title}" foi excluído com sucesso.`);
-      router.push("/books");
-    } catch (error) {
-      console.error("Erro ao excluir:", error);
-      toast.error("Falha ao excluir o livro. Tente novamente.");
-    }
-  };
+    toast.success(`"${book.title}" foi excluído com sucesso.`);
+    router.push("/Collection"); 
+  } catch (error) {
+    console.error("Erro ao excluir:", error);
+    toast.error("Falha ao excluir o livro. Tente novamente.");
+  }
+};
 
   if (loading) return <p className="text-center py-10">Carregando livro...</p>;
   if (!book) return <p className="text-center py-10">Livro não encontrado.</p>;
