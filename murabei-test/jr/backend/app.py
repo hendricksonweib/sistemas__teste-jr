@@ -140,15 +140,45 @@ def get_all_authors():
     return jsonify(get_authors())
 
 # POST /api/v1/books - creates a new book
-
-
 @app.route('/api/v1/books', methods=['POST'])
 def create_book():
+    try:
+        book_data = request.get_json()
 
-    # Get the book data from the request body
-    book_data = request.get_json()
+        title = book_data.get("title")
+        author = book_data.get("author")
+        authors = book_data.get("authors")
+        publisher = book_data.get("publisher")
+        biography = book_data.get("biography")
+        synopsis = book_data.get("synopsis")
 
-    return jsonify(create_new_book(book_data))
+        if not title or not author:
+            return jsonify({"message": "Título e autor são obrigatórios."}), 400
+
+        conn = sqlite3.connect("db.sqlite")
+        cursor = conn.cursor()
+
+        cursor.execute(
+            '''
+            INSERT INTO book (title, author, authors, publisher, biography, synopsis)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ''',
+            (title, author, authors, publisher, biography, synopsis)
+        )
+
+        book_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "message": "Livro criado com sucesso.",
+            "book": {
+                "id": book_id,
+                "title": title,
+                "author": author
+            }
+        }), 201
+
 
 
 def get_all_books(page=1, page_size=10):
